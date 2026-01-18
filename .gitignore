@@ -1,0 +1,19 @@
+cat > .gitignore <<EOF
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+
+# SSH keys (NEVER commit these!)
+*.pem
+*key*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs/backups
+*.log
+*.bak
+EOF
