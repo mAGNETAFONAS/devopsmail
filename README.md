@@ -12,6 +12,7 @@ A hands-on AWS + DevOps portfolio project built over 10+ days.
 - `days/day1/`: AWS foundations, IAM, CLI, billing alarm
 - `days/day2/`: VPC, subnets, route tables, security groups
 - `days/day3/`: EC2 instance, Elastic IP, User Data script
+- `days/day4/`: IAM roles and policies
 
 ## How to Use
 1. Configure AWS CLI with least-privilege IAM user

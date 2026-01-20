@@ -32,7 +32,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    name = "DevopsMail-Public-Subnet"
+    Name = "DevopsMail-Public-Subnet"
   }
 }
 
@@ -114,7 +114,7 @@ resource "aws_instance" "web" {
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
   key_name               = aws_key_pair.deployer.key_name
-  iam_instance_profile = aws_iam_instance_profile.ec2_ses_profile.name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_ses_profile.name
 
   user_data = <<-EOF
                 #!/bin/bash
@@ -134,4 +134,48 @@ resource "aws_instance" "web" {
 resource "aws_eip" "web" {
   domain     = "vpc"
   depends_on = [aws_instance.web]
+}
+
+# IAM Role for EC
+resource "aws_iam_role" "ec2_ses_role" {
+  name = "DevopsMail-EC2-SES-Role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# IAM Policy
+resource "aws_iam_role_policy" "ses_send" {
+  name = "allow-ses-send"
+  role = aws_iam_role.ec2_ses_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Instance Profile
+resource "aws_iam_instance_profile" "ec2_ses_profile" {
+  name = "DevopsMail-EC2-SES_Profile"
+  role = aws_iam_role.ec2_ses_role.name
 }
